@@ -1,0 +1,62 @@
+# in-game
+create-data-table: >
+  CREATE TABLE IF NOT EXISTS player_data (
+    uuid CHAR(36) NOT NULL,
+    mode TINYINT(1) DEFAULT 0,
+    real_coins BIGINT,
+    play_coins BIGINT,
+    claim_cooldown INT DEFAULT 0,
+    last_refilled DATETIME DEFAULT NULL,
+    verified TINYINT(1) DEFAULT 0,
+    PRIMARY KEY (uuid)
+  )
+
+create-stats-table: >
+  CREATE TABLE IF NOT EXISTS player_stats (
+    uuid CHAR(36) NOT NULL,
+    real_bets INT DEFAULT 0,
+    play_time INT DEFAULT 0,
+    PRIMARY KEY (uuid)
+  )
+
+create-claimed-table: >
+  CREATE TABLE IF NOT EXISTS claim_data (
+    ip_address VARBINARY(16) NOT NULL,
+    uuid CHAR(36) DEFAULT NULL,
+    PRIMARY KEY (ip_address)
+  )
+
+get-player: "SELECT * FROM player_data WHERE uuid = ?"
+get-player-stats: "SELECT * FROM player_stats WHERE uuid = ?"
+insert-player: "INSERT INTO player_data (uuid, real_coins, play_coins) VALUES (?, ?, ?)"
+insert-player-stats: "INSERT INTO player_stats (uuid) VALUES (?)"
+update-time-played: "UPDATE player_stats SET play_time = ? WHERE uuid = ?"
+increment-real-bets: "UPDATE player_stats SET real_bets = real_bets + 1 WHERE uuid = ?"
+update-mode: "UPDATE player_data SET mode = ? WHERE uuid = ?"
+update-real-coins: "UPDATE player_data SET real_coins = ? WHERE uuid = ?"
+update-play-coins: "UPDATE player_data SET play_coins = ? WHERE uuid = ?"
+remove-real-coins: "UPDATE player_data SET real_coins = real_coins - ? WHERE uuid = ?"
+remove-play-coins: "UPDATE player_data SET play_coins = play_coins - ? WHERE uuid = ?"
+add-real-coins: "UPDATE player_data SET real_coins = real_coins + ? WHERE uuid = ?"
+add-play-coins: "UPDATE player_data SET play_coins = play_coins + ? WHERE uuid = ?"
+insert-ip: "INSERT INTO claim_data (ip_address, uuid) VALUES (INET6_ATON(?), ?)"
+get-ip: "SELECT * FROM claim_data WHERE ip_address = INET6_ATON(?)"
+update-claim-cooldown: "UPDATE player_data SET claim_cooldown = ? WHERE uuid = ?"
+update-last-refilled: "UPDATE player_data SET play_coins = play_coins + ?, last_refilled = NOW() WHERE uuid = ?"
+update-verified: "UPDATE player_data SET verified = 1 WHERE uuid = ?"
+sum-real-coins: "SELECT SUM(real_coins) FROM player_data"
+top-balances: "SELECT uuid, real_coins FROM player_data ORDER BY reaL_coins DESC LIMIT 5"
+
+# coinbase transactions
+create-transactions-table: >
+  CREATE TABLE IF NOT EXISTS transactions (
+    id CHAR(36) NOT NULL,
+    player_uuid CHAR(36) NOT NULL,
+    amount VARCHAR(32) DEFAULT NULL,
+    status ENUM('CREATED', 'FAILED', 'CONFIRMED'),
+    creation_time DATETIME DEFAULT NOW(),
+    PRIMARY KEY (id)
+  )
+
+insert-transaction: "INSERT INTO transactions (id, player_uuid, status) VALUES (?, ?, ?)"
+update-transaction: "UPDATE transactions SET status = ?, amount = ? WHERE id = ? AND player_uuid = ?"

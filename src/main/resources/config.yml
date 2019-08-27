@@ -1,0 +1,8 @@
+claim-amount: "0.00010"
+claim-cooldown: 15
+minimum-payout: "0.01"
+real-coins-starting-balance: "0.0"
+play-coins-starting-balance: "5.0"
+fee-per-kb: "0.0005"
+deposit-address-expiry-seconds: 60
+deposit-url: "http://144.217.88.97/deposit/{{address}}/{{uuid}}"

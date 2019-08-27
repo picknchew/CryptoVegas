@@ -1,0 +1,6 @@
+name: Core
+version: ${project.version}
+main: cc.cryptovegas.core.Core
+depend: [DeluxeChat, HolographicDisplays, ViaVersion]
+authors: [PickNChew]
+description: Core plugin for CryptoVegas
